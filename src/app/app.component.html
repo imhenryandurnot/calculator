@@ -1,0 +1,159 @@
+<!-- Header-->
+<header class="py-5">
+  <div class="container px-lg-5">
+      <div class="text-center">
+          <div class="m-2 m-lg-2">
+              <h1 class="display-5 fw-bold"><img src="../assets/blackfonttransparent.png" height="200px" alt="logo"></h1>
+          </div>
+      </div>
+  </div>
+</header>
+<!-- Page Content-->
+<section class="pt-4">
+  <div class="container px-lg-5">
+      <!-- Page Features-->
+      <div class="row gx-lg-5">
+          <div class="col-lg-6 mb-5">
+              <div class="card bg-light border-0 h-100">
+                  <div class="card-body text-center p-4 p-lg-5">
+                    <form [formGroup]="calculatorForm">
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Age</mat-label>
+                          <input matInput formControlName="age" type="number">
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Body Weight(in lbs)</mat-label>
+                          <input matInput formControlName="bodyWeight" type="number">
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Body Fat Percentage</mat-label>
+                          <input matInput formControlName="bodyFat" type="number">
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Gender</mat-label>
+                          <mat-select formControlName="gender">
+                            <mat-option value="male">Male</mat-option>
+                            <mat-option value="female">Female</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Height</mat-label>
+                          <mat-select  formControlName="height" (selectionChange)="getSelHeightInFt($event)">
+                            <mat-option *ngFor="let option of heightOptions" [value]="option.value">{{option.name}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Activity Level</mat-label>
+                          <mat-select  formControlName="activityLevel">
+                            <mat-option *ngFor="let option of activityLevelOptions" [value]="option.value">{{option.name}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Macro Split/Goal</mat-label>
+                          <mat-select formControlName="macro">
+                            <mat-option *ngFor="let option of macroOptions" [value]="option.value">{{option.name}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field appearance="legacy">
+                          <mat-label>Macro Type</mat-label>
+                          <mat-select formControlName="macroType">
+                            <mat-option value="carb">Carb Heavy</mat-option>
+                            <mat-option value="fat">Fat Heavy</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <button mat-stroked-button color="warn" class="m-2" type="reset" (click)="resetForm()">Reset</button>
+                      <button mat-stroked-button color="primary" class="m-2" type="submit" (click)="submitForm(target)">Calculate</button>
+                    </form>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-6 mb-5">
+              <div class="card border-0 h-100">
+                  <div class="card-body p-4 p-lg-5 pt-0 pt-lg-0">
+                      <h2 class="fs-4 fw-bold mt-3">How TDEE is Calculated</h2>
+                      <p class="mb-0">
+                        Your Total Daily Energy Expenditure (TDEE) is an estimation of how many calories you burn per day when exercise is taken into account. It is calculated by first figuring out your Basal Metabolic Rate, then multiplying that value by an activity multiplier.
+                        
+                        Since your BMR represents how many calories your body burns when at rest, it is necessary to adjust the numbers upwards to account for the calories you burn during the day. This is true even for those with a sedentary lifestyle. Our TDEE calculator uses the best formulas and displays your score in a way that's easy to read and meaningful.
+                        
+                      </p>
+                      <p class="p-2">
+                        <img src="../assets/tdee-pie-chart.png" alt="chart">
+                      </p>
+                  </div>
+              </div>
+          </div> 
+          <div class="col-lg-6 mb-5" #target>
+            <div class="card border-0 h-100" *ngIf="calculated">
+                <div class="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
+                    <h3 class="fs-4 fw-bold mt-3 mb-3">Your TDEE Results</h3>
+                    <p class="mb-0"><span class="fw-bold">{{tdee | number: '1.0-0'}} </span><span>calories/day</span></p>
+                    <p><span class="fw-bold">{{tdee*7 | number: '1.0-0'}} </span><span class="sm">calories/week</span></p>
+                    <mat-chip-list>
+                      <mat-chip><span class="fw-light">Age: {{chipData.age}}</span></mat-chip>
+                      <mat-chip><span class="fw-light">Weight(lbs): {{chipData.bodyWeight | number: '1.0-0'}}</span></mat-chip>
+                      <mat-chip><span class="fw-light">{{chipData.gender}}</span></mat-chip>
+                      <mat-chip><span class="fw-light">{{chipData.height}}</span></mat-chip>
+                      <mat-chip><span class="fw-light">{{chipData.activityLevel}}</span></mat-chip>
+                      <mat-chip><span class="fw-light">{{chipData.macro}}</span></mat-chip>
+                    </mat-chip-list>                      
+                </div>
+            </div>
+          </div>
+          <div class="col-lg-6 mb-5" *ngIf="calculated">
+            <div class="card bg-light border-0 h-100">
+                <div class="card-body p-4 p-lg-5 pt-0 pt-lg-0">
+                    <p class="mt-3 mb-2">Based on your Input, the best estimate for your maintenance calories is <span class="fw-bold">{{tdee | number: '1.0-0'}} </span> per day using the Muller Equation, which is regarded as the most accurate.
+                        This table is a visual aid for all the different activity levels.</p>
+                    <table mat-table [dataSource]="dataSource" style="width: 100%;">
+                      <ng-container matColumnDef="position">
+                        <th mat-header-cell *matHeaderCellDef> Activity Level </th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                      </ng-container>
+                      <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Calories/Day </th>
+                        <td mat-cell *matCellDef="let element"> {{(bmr * element.formula).toFixed(0)}} </td>
+                      </ng-container>                      
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </div>
+            </div>
+          </div>
+          <div class="col-lg-12 mb-5" *ngIf="calculated">
+            <div class="card bg-light h-100">
+                <div class="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
+                    <h2 class="fs-4 fw-bold mt-4 mb-3">{{chipData.macro}}</h2>
+                    <p class="mb-3 fw-lighter">
+                      While your TDEE can be used as a base line. Our program requires you to follow this macro breakdown
+                    </p>
+                    <p class="mb-3">Total Calories: <span class="fw-bold">{{macroNumber | number: '1.0-0'}} </span></p>
+                    <p class="mb-0">Carbs: <span class="fw-bold">{{carbGrams*4 | number: '1.0-0'}} </span><span class="fw-light">calories/</span><span class="fw-bold">{{carbGrams | number: '1.0-0'}} </span> <span class="fw-light">grams</span></p>
+                    <p class="mb-0">Protein: <span class="fw-bold">{{proteinGrams*4 | number: '1.0-0'}} </span> <span class="fw-light">calories/</span><span class="fw-bold">{{proteinGrams | number: '1.0-0'}} </span> <span class="fw-light">grams</span></p>
+                    <p class="mb-0">Fats: <span class="fw-bold">{{fatGrams*9 | number: '1.0-0'}} </span> <span class="fw-light">calories/</span><span class="fw-bold">{{fatGrams | number: '1.0-0'}} </span> <span class="fw-light">grams</span></p>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
+</section>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+  <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Crossfit Perception</p></div>
+</footer>
